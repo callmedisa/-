@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Адаптация сотрудников ОЦ</title>
+<style>
+:root{
+  --bg:#f5f7fa; --card:#fff; --ink:#1b2430; --muted:#5d6b7c; --line:#e1e6ed;
+  --brand:#1f5fd1; --brand-soft:#e6eefc; --ok:#1d8a4e; --ok-soft:#e3f5eb;
+  --warn:#b26a00; --warn-soft:#fff3dd; --bad:#c0392b; --bad-soft:#fde9e6;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0f141b; --card:#171e28; --ink:#e7ecf3; --muted:#93a1b3; --line:#2a3443;
+    --brand:#6aa0ff; --brand-soft:#1b2a45; --ok:#4cc585; --ok-soft:#14301f;
+    --warn:#f0b44c; --warn-soft:#3a2d12; --bad:#ff8577; --bad-soft:#3b1b18;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:110px;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+header{position:sticky;top:0;z-index:10;background:var(--card);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.bar{max-width:1040px;margin:0 auto;padding:8px 16px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-weight:700}
+.logo span{color:var(--brand)}
+.progress{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.pbar{width:80px;height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+nav{max-width:1040px;margin:0 auto;padding:6px 12px 8px;display:flex;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{flex:0 0 auto;color:var(--muted);text-decoration:none;padding:7px 13px;border-radius:99px;font-size:14px;white-space:nowrap}
+nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600}
+main{max-width:1040px;margin:0 auto;padding:8px 16px 16px}
+section{padding:24px 0}
+h1{font-size:32px;line-height:1.2;margin:0 0 12px}
+h2{font-size:25px;line-height:1.25;margin:0 0 6px}
+h3{font-size:18px;margin:20px 0 8px}
+.lead{color:var(--muted);font-size:17px;max-width:720px;margin:0 0 12px}
+.hero{background:linear-gradient(135deg,var(--brand-soft),var(--card));border:1px solid var(--line);border-radius:16px;padding:28px 22px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card h3{margin-top:0}
+.card p{margin:0;color:var(--muted)}
+.num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--brand);color:#fff;font-weight:700;font-size:14px;margin-bottom:8px}
+.note{border-left:4px solid var(--brand);background:var(--brand-soft);padding:12px 14px;border-radius:8px;margin:14px 0}
+.note.warn{border-color:var(--warn);background:var(--warn-soft)}
+.note.bad{border-color:var(--bad);background:var(--bad-soft)}
+.tabs{display:none;gap:6px;margin:14px 0 0;grid-template-columns:repeat(3,1fr)}
+.js .tabs{display:grid}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:12px 6px;border-radius:10px 10px 0 0;cursor:pointer;font:inherit;font-weight:600;font-size:15px;touch-action:manipulation}
+.panel+.panel{margin-top:14px;border-radius:14px}
+.js .panel+.panel{margin-top:0;border-radius:0 0 14px 14px}
+.tab[aria-selected="true"]{background:var(--brand);color:#fff;border-color:var(--brand)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:0 0 14px 14px;padding:18px}
+.panel[hidden]{display:none}
+.panel h3:first-child{margin-top:0}
+.panel ul,.panel ol,.card ul{padding-left:22px;margin:6px 0}
+.panel li{margin:4px 0}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:8px 0}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:460px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:13px;font-weight:600;white-space:nowrap}
+.t-bad{background:var(--bad-soft);color:var(--bad)}.t-warn{background:var(--warn-soft);color:var(--warn)}.t-ok{background:var(--ok-soft);color:var(--ok)}.t-info{background:var(--brand-soft);color:var(--brand)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:8px 0}
+.steps li{counter-increment:s;position:relative;padding:4px 0 12px 42px;margin:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:2px;width:28px;height:28px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
+.steps li::after{content:"";position:absolute;left:13px;top:32px;bottom:0;width:2px;background:var(--line)}
+.steps li:last-child::after{display:none}
+.check{display:flex;gap:12px;align-items:flex-start;padding:10px 0;cursor:pointer;border-bottom:1px solid var(--line)}
+.check:last-child{border:0}
+.check input{margin-top:4px;width:20px;height:20px;flex:0 0 auto;accent-color:var(--ok)}
+.check input:checked+span{color:var(--muted);text-decoration:line-through}
+.q{margin:0 0 14px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.q p{margin:0 0 8px;font-weight:600}
+.opt{display:block;padding:11px 12px;border:1px solid var(--line);border-radius:8px;margin:6px 0;cursor:pointer}
+.opt.right{background:var(--ok-soft);border-color:var(--ok)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.btn{background:var(--brand);color:#fff;border:0;padding:12px 20px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer;min-height:44px}
+.btn.ghost{background:transparent;color:var(--brand);border:1px solid var(--brand)}
+.btn.sm{padding:8px 14px;min-height:38px;font-size:14px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+#result{margin-top:14px;font-weight:600;font-size:18px}
+/* форма свода */
+.form{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:10px 0}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+input[type=text],input[type=date],input[type=number],input[type=time],select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px}
+textarea{min-height:80px;resize:vertical}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0}
+@media(min-width:640px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.kpi b{display:block;font-size:26px;line-height:1.1}
+.kpi small{color:var(--muted)}
+.inc{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:var(--card)}
+.inc .row{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px}
+pre#out{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;max-height:340px;overflow:auto}
+footer{max-width:1040px;margin:0 auto;padding:20px 16px calc(40px + env(safe-area-inset-bottom));color:var(--muted);font-size:14px}
+@media (max-width:640px){
+  h1{font-size:26px}h2{font-size:22px}.hero{padding:20px 16px}
+  .panel{padding:14px}
+}
+@media print{header,.btns,nav{display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <div class="logo">ОЦ · <span>Адаптация</span></div>
+    <div class="progress"><div class="pbar"><i id="pfill"></i></div><span id="ptext">0%</span></div>
+  </div>
+  <nav id="nav">
+    <a href="#welcome">Приветствие</a>
+    <a href="#monitoring">Мониторинг</a>
+    <a href="#access">Сеть доступа</a>
+    <a href="#accident">Аварии</a>
+    <a href="#summary">Свод аварий</a>
+    <a href="#checklist">Чек-лист</a>
+    <a href="#quiz">Тест</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ПРИВЕТСТВИЕ -->
+<section id="welcome">
+  <div class="hero">
+    <h1>Добро пожаловать в оперативный центр!</h1>
+    <p class="lead" style="margin:0">Курс поможет освоить правила работы в <b>clearAccess</b>, <b>Remedy</b> и <b>Censor</b>, понять, как мы наблюдаем за сетью доступа, координируем устранение аварий и взаимодействуем с техническими подразделениями.</p>
+  </div>
+
+  <h2 style="margin-top:26px">Чем занимается ОЦ</h2>
+  <div class="grid" style="margin-top:12px">
+    <div class="card"><div class="num">1</div><h3>Наблюдать</h3><p>Круглосуточный мониторинг сети доступа и систем clearAccess, Remedy, Censor.</p></div>
+    <div class="card"><div class="num">2</div><h3>Зафиксировать</h3><p>Каждое событие — запись. Нет записи в системе — нет события.</p></div>
+    <div class="card"><div class="num">3</div><h3>Координировать</h3><p>Передать профильному подразделению, держать связь, контролировать сроки.</p></div>
+    <div class="card"><div class="num">4</div><h3>Отчитаться</h3><p>Информировать руководство и заказчиков, составить ежедневный свод аварий.</p></div>
+  </div>
+
+  <h3>Ваши первые 5 дней</h3>
+  <div class="tw"><table>
+    <tr><th>День</th><th>Что делаем</th></tr>
+    <tr><td>1</td><td>Знакомство с командой, доступы, обзор курса, наблюдение за сменой</td></tr>
+    <tr><td>2</td><td>clearAccess и обзор сети доступа под присмотром наставника</td></tr>
+    <tr><td>3</td><td>Remedy: регистрация и ведение инцидентов на тестовых записях</td></tr>
+    <tr><td>4</td><td>Censor, координация аварии, работа с подразделениями</td></tr>
+    <tr><td>5</td><td>Составление свода аварий, итоговый тест, работа в паре</td></tr>
+  </table></div>
+
+  <h3>График смен (учебный)</h3>
+  <div class="tw"><table>
+    <tr><th>Смена</th><th>Время</th><th>Передача смены</th></tr>
+    <tr><td>Дневная</td><td>08:00 – 20:00</td><td>19:45 – 20:00</td></tr>
+    <tr><td>Ночная</td><td>20:00 – 08:00</td><td>07:45 – 08:00</td></tr>
+  </table></div>
+  <p style="font-size:14px;color:var(--muted)">Ежедневный свод аварий отправляется руководителю до 08:30 за предыдущие сутки.</p>
+
+  <h3>Глоссарий</h3>
+  <div class="grid">
+    <div class="card"><p><b>SLA</b> — договорный срок реакции и решения.</p></div>
+    <div class="card"><p><b>INC</b> — номер инцидента в Remedy (INC000123).</p></div>
+    <div class="card"><p><b>Эскалация</b> — передача вопроса выше или в профильную группу.</p></div>
+    <div class="card"><p><b>Узел доступа</b> — оборудование, к которому подключены абоненты.</p></div>
+    <div class="card"><p><b>Головной инцидент</b> — основная запись, к которой привязаны однотипные обращения.</p></div>
+    <div class="card"><p><b>Магистраль</b> — основной канал между узлами сети.</p></div>
+  </div>
+
+  <div class="note"><b>Правила команды.</b> Не знаете — спросите наставника. Не уверены в приоритете — ставьте выше и эскалируйте. Передавая смену, оставляйте понятный комментарий в каждой открытой записи.</div>
+</section>
+
+<!-- МОНИТОРИНГ ПРОГРАММ -->
+<section id="monitoring">
+  <h2>Мониторинг данных в программах</h2>
+  <p class="lead">Выберите систему: назначение, что отслеживаем и правила работы.</p>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="ca" aria-selected="true">clearAccess</button>
+    <button class="tab" role="tab" data-tab="rm" aria-selected="false">Remedy</button>
+    <button class="tab" role="tab" data-tab="cs" aria-selected="false">Censor</button>
+  </div>
+
+  <div class="panel" id="p-ca" role="tabpanel">
+    <h3>Назначение</h3>
+    <p>clearAccess — система управления доступами: заявки на выдачу, изменение и отзыв прав, учётные записи, согласования.</p>
+    <h3>Что мониторим</h3>
+    <ul>
+      <li>Новые заявки и статус согласования</li>
+      <li>Просроченные согласования и «зависшие» заявки</li>
+      <li>Заявки на привилегированные и критичные права</li>
+      <li>Отзыв доступов при увольнении и переводе</li>
+    </ul>
+    <h3>Правила работы</h3>
+    <ol>
+      <li>Проверяйте очередь в начале смены и далее по регламенту (рекомендуется каждые 30 минут).</li>
+      <li>Доступ — только по заявке с согласованием владельца ресурса и руководителя. Устные просьбы не принимаются.</li>
+      <li>Критичные права без полного согласования не исполняем — возвращаем инициатору с комментарием.</li>
+      <li>Отзыв доступов при увольнении — наивысший приоритет.</li>
+      <li>Любое действие — с комментарием: что, кем, на каком основании.</li>
+    </ol>
+    <div class="tw"><table>
+      <tr><th>Статус</th><th>Действие ОЦ</th></tr>
+      <tr><td><span class="tag t-info">На согласовании</span></td><td>Следить за сроком</td></tr>
+      <tr><td><span class="tag t-warn">Просрочена</span></td><td>Напомнить согласующему, эскалировать руководителю смены</td></tr>
+      <tr><td><span class="tag t-ok">Согласована</span></td><td>Передать на исполнение, проверить результат</td></tr>
+      <tr><td><span class="tag t-bad">Отклонена</span></td><td>Проверить причину, уведомить инициатора</td></tr>
+    </table></div>
+    <div class="note bad"><b>Запрещено:</b> передавать логины и пароли в чате или по телефону, выдавать права «временно, без заявки», работать под чужой учётной записью.</div>
+  </div>
+
+  <div class="panel" id="p-rm" role="tabpanel">
+    <h3>Назначение</h3>
+    <p>Remedy — система учёта инцидентов, запросов и изменений. Единый источник данных по всем обращениям и срокам (SLA).</p>
+    <h3>Что мониторим</h3>
+    <ul>
+      <li>Новые инциденты в очереди ОЦ</li>
+      <li>Записи с приближающимся или нарушенным SLA</li>
+      <li>Инциденты высокого приоритета и массовые сбои</li>
+      <li>Записи без исполнителя или без движения</li>
+    </ul>
+    <h3>Приоритеты</h3>
+    <div class="tw"><table>
+      <tr><th>Приоритет</th><th>Критерий</th><th>Действие</th></tr>
+      <tr><td><span class="tag t-bad">Критический</span></td><td>Сервис недоступен для многих абонентов</td><td>Немедленно: звонок дежурному, эскалация, оповещение руководства</td></tr>
+      <tr><td><span class="tag t-warn">Высокий</span></td><td>Серьёзная деградация или сбой у важной группы</td><td>Назначить группу в течение 15 мин</td></tr>
+      <tr><td><span class="tag t-info">Средний</span></td><td>Проблема у одного абонента, есть обходной путь</td><td>По очереди</td></tr>
+      <tr><td><span class="tag t-ok">Низкий</span></td><td>Вопрос / косметическая проблема</td><td>В плановом порядке</td></tr>
+    </table></div>
+    <h3>Сроки SLA (учебные)</h3>
+    <div class="tw"><table>
+      <tr><th>Приоритет</th><th>Реакция</th><th>Решение</th></tr>
+      <tr><td>Критический</td><td>5 мин</td><td>4 часа</td></tr>
+      <tr><td>Высокий</td><td>15 мин</td><td>8 часов</td></tr>
+      <tr><td>Средний</td><td>1 час</td><td>24 часа</td></tr>
+      <tr><td>Низкий</td><td>4 часа</td><td>72 часа</td></tr>
+    </table></div>
+    <h3>Пример записи</h3>
+    <div class="note"><b>INC000214 · Высокий</b><br>Нет связи у абонентов дома по ул. Центральная, 12 с 08:15. Затронуто ~340 абонентов. Узел доступа недоступен, на питании ошибка. Передано: Энергетика, дежурный Петров В., 08:22. Следующее обновление в 09:00.</div>
+    <h3>Правила работы</h3>
+    <ol>
+      <li>Одно обращение — одна запись. Перед созданием проверьте дубликаты.</li>
+      <li>В описании: что, когда, кого затрагивает, узел/сегмент сети, шаги проверки.</li>
+      <li>Верно выбирайте категорию и группу назначения.</li>
+      <li>Каждое действие — комментарий в журнале работ.</li>
+      <li>Закрывайте только после подтверждения решения и с указанием причины.</li>
+    </ol>
+    <div class="note warn"><b>Частая ошибка:</b> закрыть запись «для статистики» без решения — запись вернут, SLA будет считаться нарушенным.</div>
+  </div>
+
+  <div class="panel" id="p-cs" role="tabpanel">
+    <h3>Назначение</h3>
+    <p>Censor — система контроля: фиксирует события по правилам политики и показывает срабатывания, которые должен проверить оператор.</p>
+    <h3>Что мониторим</h3>
+    <ul>
+      <li>Новые срабатывания правил и их критичность</li>
+      <li>Повторяющиеся события от одного источника</li>
+      <li>Непросмотренные события старше установленного времени</li>
+      <li>Ложные срабатывания — для донастройки правил</li>
+    </ul>
+    <h3>Алгоритм разбора события</h3>
+    <ol class="steps">
+      <li><b>Прочитать</b> срабатывание: правило, источник, время, объём.</li>
+      <li><b>Проверить контекст:</b> есть ли связанная заявка в clearAccess или запись в Remedy.</li>
+      <li><b>Классифицировать:</b> ложное / нарушение политики / инцидент безопасности.</li>
+      <li><b>Действовать:</b> ложное — пометить; нарушение — запись в Remedy; инцидент ИБ — немедленная эскалация.</li>
+      <li><b>Зафиксировать</b> решение комментарием.</li>
+    </ol>
+    <div class="tw"><table>
+      <tr><th>Уровень</th><th>Реакция</th></tr>
+      <tr><td><span class="tag t-bad">Критичное</span></td><td>Сразу эскалировать ИБ и руководителю смены, не разбирать самостоятельно</td></tr>
+      <tr><td><span class="tag t-warn">Значимое</span></td><td>Разбор в течение смены, запись в Remedy</td></tr>
+      <tr><td><span class="tag t-ok">Информационное</span></td><td>Просмотр и отметка</td></tr>
+    </table></div>
+    <div class="note bad"><b>Конфиденциальность:</b> содержимое событий не обсуждается вне рабочих каналов и не пересылается в личные мессенджеры.</div>
+  </div>
+
+  <h3>Как системы работают вместе</h3>
+  <div class="grid">
+    <div class="card"><h3>Censor → Remedy</h3><p>Подтверждённое нарушение фиксируется записью в Remedy со ссылкой на событие.</p></div>
+    <div class="card"><h3>Remedy → clearAccess</h3><p>Если для решения нужны права — создаётся заявка, её номер указывается в записи.</p></div>
+    <div class="card"><h3>clearAccess → Censor</h3><p>Выданные доступы помогают отличить штатное поведение от нарушения.</p></div>
+  </div>
+</section>
+
+<!-- СЕТЬ ДОСТУПА -->
+<section id="access">
+  <h2>Мониторинг и управление сетью доступа</h2>
+  <p class="lead">Сеть доступа — последний участок между оператором и абонентом. Здесь чаще всего возникают массовые и локальные сбои.</p>
+
+  <div class="grid">
+    <div class="card"><h3>Что отслеживаем</h3>
+      <ul>
+        <li>Доступность узлов и каналов (up / down)</li>
+        <li>Группы абонентов, потерявших связь</li>
+        <li>Деградация: потери, задержки, загрузка</li>
+        <li>Аварии по питанию и климату на объектах</li>
+      </ul></div>
+    <div class="card"><h3>Что можем делать</h3>
+      <ul>
+        <li>Проверять статус и доступность узла</li>
+        <li>Собирать данные для передачи в подразделение</li>
+        <li>Выполнять только разрешённые регламентом операции</li>
+      </ul></div>
+    <div class="card"><h3>Чего нельзя</h3>
+      <ul>
+        <li>Менять конфигурацию без заявки и согласования</li>
+        <li>Перезагружать оборудование «на пробу»</li>
+        <li>Игнорировать повторяющийся сигнал</li>
+      </ul></div>
+  </div>
+
+  <h3>Оценка масштаба</h3>
+  <div class="tw"><table>
+    <tr><th>Масштаб</th><th>Признак</th><th>Приоритет</th></tr>
+    <tr><td>Единичный абонент</td><td>Один порт / одна линия</td><td><span class="tag t-info">Средний</span></td></tr>
+    <tr><td>Группа</td><td>Один узел / шкаф / дом</td><td><span class="tag t-warn">Высокий</span></td></tr>
+    <tr><td>Массовая авария</td><td>Несколько узлов, магистраль, район</td><td><span class="tag t-bad">Критический</span></td></tr>
+  </table></div>
+  <div class="note"><b>Правило:</b> несколько однотипных обращений из одной зоны — это не десять инцидентов, а одна авария. Свяжите записи с головным инцидентом.</div>
+</section>
+
+<!-- КООРДИНАЦИЯ АВАРИИ -->
+<section id="accident">
+  <h2>Координация устранения аварии</h2>
+  <p class="lead">ОЦ не чинит оборудование — ОЦ организует, чтобы его починили быстро, а все заинтересованные знали, что происходит.</p>
+
+  <ol class="steps">
+    <li><b>Обнаружение.</b> Сигнал мониторинга или обращение. Проверьте, что это не ложное срабатывание и нет дубля.</li>
+    <li><b>Регистрация.</b> Создайте инцидент в Remedy: время, узел/сегмент, охват, приоритет.</li>
+    <li><b>Оценка масштаба.</b> Сколько абонентов и услуг затронуто, есть ли обходной путь.</li>
+    <li><b>Эскалация.</b> Передайте профильному подразделению по матрице и подтвердите, что приняли в работу.</li>
+    <li><b>Информирование.</b> Руководитель смены, поддержка, заказчики. Первое сообщение — в течение 15 минут.</li>
+    <li><b>Контроль.</b> Запрашивайте статус по регламенту, фиксируйте в журнале работ, следите за SLA.</li>
+    <li><b>Восстановление.</b> Подтвердите, что сервис работает: по мониторингу и с абонентами.</li>
+    <li><b>Закрытие.</b> Укажите причину и решение, закройте запись, внесите в ежедневный свод.</li>
+  </ol>
+
+  <h3>Шаблон оповещения</h3>
+  <pre id="tpl" style="white-space:pre-wrap;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;margin:0">[АВАРИЯ] Приоритет: ___
+Время начала: __:__
+Узел / сегмент: ___
+Затронуто: ___ абонентов / услуги: ___
+Причина (предварительно): ___
+Подразделение в работе: ___
+Прогноз восстановления: __:__
+Запись Remedy: INC______
+Следующее обновление: через __ мин</pre>
+  <div class="btns"><button class="btn ghost sm" id="copyTpl">Скопировать шаблон</button></div>
+</section>
+
+<!-- ВЗАИМОДЕЙСТВИЕ -->
+<section id="teams">
+  <h2>Взаимодействие с техническими подразделениями</h2>
+  <div class="tw"><table>
+    <tr><th>Подразделение</th><th>Когда обращаемся</th><th>Что передаём</th></tr>
+    <tr><td>Эксплуатация сети доступа</td><td>Недоступен узел, группа абонентов</td><td>Узел, время, охват, результаты проверок</td></tr>
+    <tr><td>Транспортная сеть</td><td>Сбой магистрали, канала</td><td>Участок, затронутые узлы, алерты</td></tr>
+    <tr><td>Энергетика / климат</td><td>Пропало питание, перегрев</td><td>Объект, время, показания</td></tr>
+    <tr><td>Выездная бригада</td><td>Нужен выезд на объект</td><td>Адрес, описание, контакт на месте</td></tr>
+    <tr><td>Информационная безопасность</td><td>Критичное событие Censor</td><td>Событие, источник, контекст</td></tr>
+    <tr><td>Техподдержка</td><td>Обратная связь абонентам</td><td>Статус, прогноз, текст оповещения</td></tr>
+  </table></div>
+  <p style="font-size:14px;color:var(--muted)">Учебные данные: названия, номера и сроки придуманы для примера, реальные уточните у наставника.</p>
+
+  <h3>Контакты подразделений (учебные)</h3>
+  <div class="tw"><table>
+    <tr><th>Подразделение</th><th>Дежурный</th><th>Внутр.</th><th>Режим</th></tr>
+    <tr><td>Эксплуатация сети доступа</td><td>Смирнов Д.</td><td>1101</td><td>24/7</td></tr>
+    <tr><td>Транспортная сеть</td><td>Ким А.</td><td>1102</td><td>24/7</td></tr>
+    <tr><td>Энергетика / климат</td><td>Петров В.</td><td>1103</td><td>24/7</td></tr>
+    <tr><td>Выездная бригада</td><td>Диспетчер бригад</td><td>1104</td><td>24/7</td></tr>
+    <tr><td>Информационная безопасность</td><td>Дежурный ИБ</td><td>1105</td><td>24/7</td></tr>
+    <tr><td>Техподдержка (1-я линия)</td><td>Старший смены</td><td>1106</td><td>24/7</td></tr>
+    <tr><td>Руководитель смены ОЦ</td><td>Иванов А.С.</td><td>1100</td><td>по графику</td></tr>
+  </table></div>
+
+  <h3>Матрица эскалации (учебная)</h3>
+  <div class="tw"><table>
+    <tr><th>Приоритет</th><th>Уровень 1 (сразу)</th><th>Уровень 2 (если нет реакции)</th><th>Уровень 3</th></tr>
+    <tr><td><span class="tag t-bad">Критический</span></td><td>Дежурный подразделения + руководитель смены</td><td>Через 10 мин: начальник подразделения</td><td>Через 30 мин: директор по эксплуатации</td></tr>
+    <tr><td><span class="tag t-warn">Высокий</span></td><td>Дежурный подразделения</td><td>Через 20 мин: руководитель смены</td><td>Через 60 мин: начальник подразделения</td></tr>
+    <tr><td><span class="tag t-info">Средний</span></td><td>Очередь подразделения</td><td>Через 2 ч: дежурный</td><td>Через 4 ч: руководитель смены</td></tr>
+    <tr><td><span class="tag t-ok">Низкий</span></td><td>Очередь подразделения</td><td>Через 8 ч: руководитель смены</td><td>—</td></tr>
+  </table></div>
+
+  <h3>Как общаться</h3>
+  <ul>
+    <li><b>Кратко и по фактам:</b> что, где, с какого времени, сколько затронуто.</li>
+    <li><b>Просьба с ожиданием:</b> «Прошу принять в работу и назвать срок первого обновления».</li>
+    <li><b>Подтверждение:</b> фиксируйте в Remedy, кто принял, во сколько, что пообещал.</li>
+    <li><b>Нет ответа за 10–15 минут</b> — повторный звонок, затем эскалация руководителю смены.</li>
+  </ul>
+</section>
+
+<!-- СВОД АВАРИЙ -->
+<section id="summary">
+  <h2>Ежедневный свод аварий на сети</h2>
+  <p class="lead">В конце смены (или к времени по регламенту) ОЦ составляет свод. Заполните форму ниже — текст соберётся автоматически, его можно скопировать и отправить.</p>
+
+  <div class="card">
+    <div class="form">
+      <label class="f">Дата<input type="date" id="sDate"></label>
+      <label class="f">Смена
+        <select id="sShift"><option>Дневная</option><option>Ночная</option><option>Сутки</option></select></label>
+      <label class="f">Дежурный<input type="text" id="sName" placeholder="ФИО"></label>
+    </div>
+    <div class="btns">
+      <button class="btn sm" id="addInc" type="button">+ Добавить аварию</button>
+      <button class="btn ghost sm" id="demoInc" type="button">Пример</button>
+      <button class="btn ghost sm" id="clearInc" type="button">Очистить</button>
+    </div>
+    <div id="incs"></div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><b id="kTotal">0</b><small>Всего аварий</small></div>
+    <div class="kpi"><b id="kOpen">0</b><small>Не устранено</small></div>
+    <div class="kpi"><b id="kCrit">0</b><small>Критических</small></div>
+    <div class="kpi"><b id="kAbon">0</b><small>Затронуто абонентов</small></div>
+  </div>
+
+  <label class="f" style="margin-top:10px">Комментарий к своду
+    <textarea id="sNote" placeholder="Общие замечания, риски на следующую смену"></textarea></label>
+
+  <h3>Готовый текст свода</h3>
+  <pre id="out"></pre>
+  <div class="btns">
+    <button class="btn" id="copyOut" type="button">Скопировать свод</button>
+    <button class="btn ghost" id="printOut" type="button">Печать / PDF</button>
+  </div>
+  <div class="note"><b>Что должно быть в своде:</b> время начала и окончания, узел/сегмент, затронутые абоненты, причина, ответственное подразделение, номер в Remedy, статус. Неустранённые аварии переходят в следующую смену с пометкой.</div>
+</section>
+
+<!-- ЧЕК-ЛИСТ -->
+<section id="checklist">
+  <h2>Чек-лист новичка</h2>
+  <p class="lead">Отмечайте шаги — прогресс сохраняется в браузере.</p>
+  <div class="card" id="checks"></div>
+  <div class="btns"><button class="btn ghost sm" id="resetChecks">Сбросить отметки</button></div>
+</section>
+
+<!-- ТЕСТ -->
+<section id="quiz">
+  <h2>Проверка знаний</h2>
+  <p class="lead">Восемь вопросов. Для зачёта нужно минимум 6 правильных ответов.</p>
+  <form id="quizForm"></form>
+  <div class="btns">
+    <button class="btn" id="checkQuiz" type="button">Проверить ответы</button>
+    <button class="btn ghost" id="resetQuiz" type="button">Пройти заново</button>
+  </div>
+  <div id="result"></div>
+</section>
+
+</main>
+
+<footer>Учебный материал для сотрудников ОЦ. Конкретные сроки, группы и контакты уточняйте у наставника и в действующих регламентах.</footer>
+
+<script>
+(function(){
+  var store = {
+    get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
+    set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  };
+  function $(id){return document.getElementById(id)}
+  function esc(s){return String(s==null?'':s)}
+
+  /* Вкладки (без JS все три панели показываются подряд) */
+  document.documentElement.classList.add('js');
+  var tabs = document.querySelectorAll('.tab');
+  function showTab(name){
+    tabs.forEach(function(x){
+      var on = x.dataset.tab===name;
+      x.setAttribute('aria-selected',on?'true':'false');
+      $('p-'+x.dataset.tab).hidden = !on;
+    });
+  }
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){showTab(t.dataset.tab)});
+  });
+  showTab('ca');
+
+  /* Копирование */
+  function copyText(text,btn){
+    function done(){var o=btn.textContent;btn.textContent='Скопировано ✓';setTimeout(function(){btn.textContent=o},1500)}
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done,fallback);
+    } else fallback();
+    function fallback(){
+      var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.select();
+      try{document.execCommand('copy');done()}catch(e){}
+      document.body.removeChild(ta);
+    }
+  }
+  $('copyTpl').addEventListener('click',function(){copyText($('tpl').textContent,this)});
+
+  /* Свод аварий */
+  var PRIO=['Критический','Высокий','Средний','Низкий'];
+  var STAT=['В работе','Устранена','Переходит на след. смену'];
+  var data;
+  try{data=JSON.parse(store.get('oc-summary')||'null')}catch(e){}
+  var demoIncs=[
+    {start:'08:15',end:'10:40',node:'Узел доступа ул. Центральная, 12',abon:340,prio:'Высокий',cause:'Пропадание питания',dept:'Энергетика',inc:'INC000214',status:'Устранена'},
+    {start:'11:30',end:'12:10',node:'Узел доступа мкр. Заречный, 5',abon:85,prio:'Средний',cause:'Сбой порта, замена модуля',dept:'Эксплуатация сети доступа',inc:'INC000221',status:'Устранена'},
+    {start:'13:05',end:'',node:'Магистраль Север — Узел 4',abon:2100,prio:'Критический',cause:'Обрыв кабеля (предварительно)',dept:'Транспортная сеть, выездная бригада',inc:'INC000228',status:'Переходит на след. смену'}
+  ];
+  if(!data||!data.incs) data={date:'',shift:'Дневная',name:'Иванов А.С.',note:'Учебный пример. Магистраль Север — Узел 4: бригада на месте, прогноз восстановления 22:00.',incs:JSON.parse(JSON.stringify(demoIncs))};
+  if(!data.date) data.date=new Date().toISOString().slice(0,10);
+
+  function save(){store.set('oc-summary',JSON.stringify(data))}
+  function newInc(){return {start:'',end:'',node:'',abon:0,prio:'Высокий',cause:'',dept:'',inc:'',status:'В работе'}}
+
+  function opts(list,sel){return list.map(function(o){return '<option'+(o===sel?' selected':'')+'>'+o+'</option>'}).join('')}
+
+  function renderIncs(){
+    var box=$('incs');box.innerHTML='';
+    data.incs.forEach(function(it,i){
+      var d=document.createElement('div');d.className='inc';
+      d.innerHTML=
+        '<div class="row"><b>Авария №'+(i+1)+'</b><button type="button" class="btn ghost sm" data-del="'+i+'">Удалить</button></div>'+
+        '<div class="form">'+
+        '<label class="f">Начало<input type="time" data-k="start" value="'+esc(it.start)+'"></label>'+
+        '<label class="f">Окончание<input type="time" data-k="end" value="'+esc(it.end)+'"></label>'+
+        '<label class="f">Узел / сегмент<input type="text" data-k="node" value="'+esc(it.node).replace(/"/g,'&quot;')+'"></label>'+
+        '<label class="f">Абонентов затронуто<input type="number" min="0" data-k="abon" value="'+esc(it.abon)+'"></label>'+
+        '<label class="f">Приоритет<select data-k="prio">'+opts(PRIO,it.prio)+'</select></label>'+
+        '<label class="f">Статус<select data-k="status">'+opts(STAT,it.status)+'</select></label>'+
+        '<label class="f">Причина<input type="text" data-k="cause" value="'+esc(it.cause).replace(/"/g,'&quot;')+'"></label>'+
+        '<label class="f">Подразделение<input type="text" data-k="dept" value="'+esc(it.dept).replace(/"/g,'&quot;')+'"></label>'+
+        '<label class="f">№ в Remedy<input type="text" data-k="inc" placeholder="INC000000" value="'+esc(it.inc).replace(/"/g,'&quot;')+'"></label>'+
+        '</div>';
+      box.appendChild(d);
+    });
+  }
+  $('incs').addEventListener('input',function(e){
+    var k=e.target.dataset.k;if(!k)return;
+    var i=[].indexOf.call($('incs').children,e.target.closest('.inc'));
+    data.incs[i][k]=(k==='abon')?(parseInt(e.target.value,10)||0):e.target.value;
+    refresh();
+  });
+  $('incs').addEventListener('click',function(e){
+    var b=e.target.closest('[data-del]');if(!b)return;
+    data.incs.splice(+b.dataset.del,1);renderIncs();refresh();
+  });
+  $('addInc').addEventListener('click',function(){data.incs.push(newInc());renderIncs();refresh()});
+  $('demoInc').addEventListener('click',function(){
+    data.incs=JSON.parse(JSON.stringify(demoIncs));
+    renderIncs();refresh();
+  });
+  $('clearInc').addEventListener('click',function(){data.incs=[];data.note='';$('sNote').value='';renderIncs();refresh()});
+
+  ['sDate','sShift','sName','sNote'].forEach(function(id){
+    $(id).addEventListener('input',function(){
+      data[{sDate:'date',sShift:'shift',sName:'name',sNote:'note'}[id]]=this.value;refresh();
+    });
+  });
+
+  function fmtDate(s){var p=s.split('-');return p.length===3?p[2]+'.'+p[1]+'.'+p[0]:s}
+
+  function refresh(){
+    var inc=data.incs;
+    var open=inc.filter(function(x){return x.status!=='Устранена'}).length;
+    var crit=inc.filter(function(x){return x.prio==='Критический'}).length;
+    var ab=inc.reduce(function(a,x){return a+(+x.abon||0)},0);
+    $('kTotal').textContent=inc.length;$('kOpen').textContent=open;
+    $('kCrit').textContent=crit;$('kAbon').textContent=ab;
+
+    var t='ЕЖЕДНЕВНЫЙ СВОД АВАРИЙ НА СЕТИ\n'+
+      'Дата: '+fmtDate(data.date)+' | Смена: '+data.shift+'\n'+
+      'Дежурный: '+(data.name||'—')+'\n'+
+      'Всего: '+inc.length+' | Не устранено: '+open+' | Критических: '+crit+' | Абонентов: '+ab+'\n';
+    if(!inc.length) t+='\nАварий за период не зафиксировано.\n';
+    inc.forEach(function(x,i){
+      t+='\n'+(i+1)+'. ['+x.prio+'] '+(x.node||'узел не указан')+'\n'+
+        '   Время: '+(x.start||'--:--')+' — '+(x.end||'продолжается')+'\n'+
+        '   Затронуто абонентов: '+(x.abon||0)+'\n'+
+        '   Причина: '+(x.cause||'уточняется')+'\n'+
+        '   Подразделение: '+(x.dept||'—')+'\n'+
+        '   Remedy: '+(x.inc||'—')+'\n'+
+        '   Статус: '+x.status+'\n';
+    });
+    if(data.note) t+='\nКомментарий: '+data.note+'\n';
+    $('out').textContent=t;
+    save();
+  }
+  $('copyOut').addEventListener('click',function(){copyText($('out').textContent,this)});
+  $('printOut').addEventListener('click',function(){window.print()});
+
+  $('sDate').value=data.date;$('sShift').value=data.shift;$('sName').value=data.name;$('sNote').value=data.note;
+  renderIncs();refresh();
+
+  /* Чек-лист */
+  var items=[
+    'Получил доступы к clearAccess, Remedy и Censor',
+    'Прочитал правила работы с заявками в clearAccess',
+    'Знаю приоритеты и SLA в Remedy',
+    'Умею зарегистрировать инцидент в Remedy',
+    'Знаю алгоритм разбора события в Censor',
+    'Понимаю, как оценить масштаб аварии на сети доступа',
+    'Знаю матрицу эскалации и контакты подразделений',
+    'Составил тестовый ежедневный свод аварий',
+    'Прошёл смену в режиме наблюдения с наставником',
+    'Сдал проверку знаний'
+  ];
+  var saved=[];try{saved=JSON.parse(store.get('oc-checks')||'[]')}catch(e){}
+  var box=$('checks');
+  items.forEach(function(text,i){
+    var l=document.createElement('label');l.className='check';
+    var c=document.createElement('input');c.type='checkbox';c.checked=!!saved[i];
+    var s=document.createElement('span');s.textContent=text;
+    c.addEventListener('change',function(){saved[i]=c.checked;store.set('oc-checks',JSON.stringify(saved));progress()});
+    l.appendChild(c);l.appendChild(s);box.appendChild(l);
+  });
+  $('resetChecks').addEventListener('click',function(){
+    saved=[];store.set('oc-checks','[]');
+    box.querySelectorAll('input').forEach(function(c){c.checked=false});progress();
+  });
+  function progress(){
+    var n=box.querySelectorAll('input:checked').length;
+    var p=Math.round(n/items.length*100);
+    $('pfill').style.width=p+'%';$('ptext').textContent=p+'%';
+  }
+  progress();
+
+  /* Тест */
+  var quiz=[
+    {q:'Можно ли выдать доступ по устной просьбе руководителя?',a:['Да, если срочно','Нет, только по заявке с согласованием','Да, временно на сутки'],c:1},
+    {q:'Что делаем перед созданием инцидента в Remedy?',a:['Звоним заказчику','Проверяем дубликаты','Ничего, сразу создаём'],c:1},
+    {q:'Поступило 10 обращений из одного дома: нет связи. Как поступить?',a:['Создать 10 независимых инцидентов','Оформить одну аварию и связать обращения с ней','Подождать, пока обращений станет больше'],c:1},
+    {q:'Когда можно закрыть запись в Remedy?',a:['Когда закончилась смена','Когда решение подтверждено, причина указана','Когда запись долго без движения'],c:1},
+    {q:'В Censor критичное событие. Что делаем?',a:['Разбираемся сами весь день','Сразу эскалируем ИБ и руководителю смены','Помечаем ложным'],c:1},
+    {q:'Подразделение приняло аварию в работу. Что делает ОЦ?',a:['Забывает до закрытия','Контролирует сроки, запрашивает статус, информирует заинтересованных','Самостоятельно перезагружает оборудование'],c:1},
+    {q:'Что включает ежедневный свод аварий?',a:['Только количество аварий','Время, узел, охват, причину, подразделение, номер Remedy, статус','Только критические аварии'],c:1},
+    {q:'Авария не устранена к концу смены. Как отражаем в своде?',a:['Не указываем','Указываем со статусом «Переходит на след. смену» и передаём сменщику','Закрываем запись'],c:1}
+  ];
+  var form=$('quizForm');
+  quiz.forEach(function(it,i){
+    var d=document.createElement('div');d.className='q';
+    var p=document.createElement('p');p.textContent=(i+1)+'. '+it.q;d.appendChild(p);
+    it.a.forEach(function(opt,j){
+      var l=document.createElement('label');l.className='opt';
+      var r=document.createElement('input');r.type='radio';r.name='q'+i;r.value=j;
+      l.appendChild(r);l.appendChild(document.createTextNode(' '+opt));d.appendChild(l);
+    });
+    form.appendChild(d);
+  });
+  $('checkQuiz').addEventListener('click',function(){
+    var score=0;
+    quiz.forEach(function(it,i){
+      form.querySelectorAll('input[name=q'+i+']').forEach(function(o,j){
+        var lab=o.parentNode;lab.classList.remove('right','wrong');
+        if(j===it.c)lab.classList.add('right');else if(o.checked)lab.classList.add('wrong');
+        if(o.checked&&j===it.c)score++;
+      });
+    });
+    var ok=score>=6,res=$('result');
+    res.textContent='Результат: '+score+' из '+quiz.length+(ok?' — зачёт! 🎉':' — повторите материал и попробуйте ещё раз.');
+    res.style.color=ok?'var(--ok)':'var(--warn)';
+  });
+  $('resetQuiz').addEventListener('click',function(){
+    form.reset();
+    form.querySelectorAll('.opt').forEach(function(o){o.classList.remove('right','wrong')});
+    $('result').textContent='';
+  });
+
+  /* Подсветка меню */
+  var links=document.querySelectorAll('#nav a');
+  /* Переход по меню скриптом: якорные ссылки не работают в части просмотрщиков */
+  links.forEach(function(a){
+    a.addEventListener('click',function(e){
+      var t=document.querySelector(a.getAttribute('href'));
+      if(!t)return;
+      e.preventDefault();
+      var h=document.querySelector('header').offsetHeight;
+      window.scrollTo({top:t.getBoundingClientRect().top+window.pageYOffset-h-8,behavior:'smooth'});
+    });
+  });
+  var secs=[].map.call(links,function(a){return document.querySelector(a.getAttribute('href'))});
+  window.addEventListener('scroll',function(){
+    var y=window.scrollY+140,cur=0;
+    secs.forEach(function(s,i){if(s.offsetTop<=y)cur=i});
+    links.forEach(function(a,i){
+      var on=i===cur;a.classList.toggle('active',on);
+      if(on&&a.scrollIntoView&&a._last!==cur){a._last=cur;var n=$('nav');n.scrollLeft=a.offsetLeft-20}
+    });
+  },{passive:true});
+})();
+</script>
+</body>
+</html>
